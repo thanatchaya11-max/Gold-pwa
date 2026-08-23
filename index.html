@@ -3,58 +3,200 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ราคาทองฮั่วเซ่งเฮง Real-time</title>
+  <title>ราคาทองฮั่วเซ่งเฮง & กราฟ Gold Spot Real-time</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
   <div class="max-w-md mx-auto space-y-4">
     
+    <!-- Header แสดงราคา Gold Spot & ค่าเงินบาท -->
     <div class="bg-gray-800 p-4 rounded-xl border border-yellow-500/30 shadow-lg">
       <div class="flex justify-between items-center mb-3">
-        <span class="text-xs font-bold text-yellow-500">ฮั่วเซ่งเฮง 96.5% (Real-time)</span>
-        <span class="text-xs text-gray-400" id="updatedTime">กำลังโหลด...</span>
+        <span class="text-xs font-bold text-yellow-500 uppercase">ตลาดทองโลก & ค่าเงินบาท</span>
+        <span class="text-xs text-gray-400" id="updatedTime">อัปเดต: --:--</span>
       </div>
       <div class="grid grid-cols-2 gap-3">
+        <!-- Gold Spot -->
         <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <span class="text-xs text-gray-400 block mb-1">รับซื้อคืน (Buy)</span>
-          <div id="buyThb" class="text-lg font-extrabold text-green-400">- ฿</div>
-          <div id="buyUsd" class="text-xs text-gray-400">$-</div>
+          <span class="text-xs text-gray-400 block mb-1">Gold Spot (XAU/USD)</span>
+          <div id="spotPrice" class="text-xl font-black text-yellow-400">$0.00</div>
+          <span class="text-[10px] text-gray-400">USD / Troy Oz.</span>
         </div>
+        <!-- ค่าเงินบาท USD/THB -->
         <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <span class="text-xs text-gray-400 block mb-1">ขายออก (Sell)</span>
-          <div id="sellThb" class="text-lg font-extrabold text-yellow-400">- ฿</div>
-          <div id="sellUsd" class="text-xs text-gray-400">$-</div>
+          <span class="text-xs text-gray-400 block mb-1">ค่าเงินบาท (USD/THB)</span>
+          <div id="fxRate" class="text-xl font-black text-blue-400">0.00 ฿</div>
+          <span class="text-[10px] text-gray-400">THB / 1 USD</span>
         </div>
       </div>
     </div>
 
-    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center text-xs text-gray-400">
-      💡 ระบบอัปเดตราคาอัตโนมัติทุกๆ 10 วินาที
+    <!-- กราฟ TradingView Real-time (XAU/USD) -->
+    <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 shadow-lg">
+      <div class="text-xs font-bold text-gray-300 uppercase mb-2">📈 กราฟเทคนิค Gold Spot (XAU/USD)</div>
+      <div class="h-80 w-full rounded-lg overflow-hidden border border-gray-900">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tradingview_gold" style="height:calc(100% - 32px);width:100%"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+          <script type="text/javascript">
+          new TradingView.widget({
+            "autosize": true,
+            "symbol": "OANDA:XAUUSD",
+            "interval": "60",
+            "timezone": "Asia/Bangkok",
+            "theme": "dark",
+            "style": "1",
+            "locale": "th_TH",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_top_toolbar": false,
+            "save_image": false,
+            "container_id": "tradingview_gold"
+          });
+          </script>
+        </div>
+        <!-- TradingView Widget END -->
+      </div>
+    </div>
+
+    <!-- Card แสดงราคาฮั่วเซ่งเฮง (บาทไทย & USD) -->
+    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
+      <div class="text-xs font-bold text-gray-300 uppercase mb-3">ราคาทองแท่งฮั่วเซ่งเฮง 96.5%</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-gray-900 p-3 rounded-lg border border-gray-800">
+          <span class="text-xs text-gray-400 block mb-1">รับซื้อคืน (HSH Buy)</span>
+          <div id="buyThb" class="text-lg font-extrabold text-green-400">- ฿</div>
+          <div id="buyUsd" class="text-xs text-gray-400">$0.00 / บาททอง</div>
+        </div>
+        <div class="bg-gray-900 p-3 rounded-lg border border-gray-800">
+          <span class="text-xs text-gray-400 block mb-1">ขายออก (HSH Sell)</span>
+          <div id="sellThb" class="text-lg font-extrabold text-yellow-400">- ฿</div>
+          <div id="sellUsd" class="text-xs text-gray-400">$0.00 / บาททอง</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- กล่องวิเคราะห์จุดเข้าซื้อ-ขาย พร้อมเหตุผล -->
+    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg space-y-3">
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-bold text-gray-300 uppercase">📊 สัญญาณวิเคราะห์ทางเทคนิค</span>
+        <span id="signalBadge" class="px-2.5 py-1 rounded text-xs font-black bg-gray-700 text-gray-300">WAIT</span>
+      </div>
+
+      <div class="bg-gray-900 p-3 rounded-lg border border-gray-800 text-xs space-y-2">
+        <div class="font-bold text-yellow-500">📌 เหตุผลประกอบการวิเคราะห์:</div>
+        <ul id="analysisReasons" class="list-disc list-inside text-gray-300 space-y-1">
+          <li>กำลังประมวลผลข้อมูลตลาดแบบ Real-time...</li>
+        </ul>
+      </div>
+
+      <!-- กรอบเป้าหมาย TP / SL -->
+      <div class="grid grid-cols-2 gap-2 text-center text-xs">
+        <div class="bg-gray-900/50 p-2 rounded border border-green-500/20">
+          <span class="text-gray-400 block">เป้าทำกำไร (TP)</span>
+          <span id="targetTP" class="font-bold text-green-400">-</span>
+        </div>
+        <div class="bg-gray-900/50 p-2 rounded border border-red-500/20">
+          <span class="text-gray-400 block">จุดตัดขาดทุน (SL)</span>
+          <span id="targetSL" class="font-bold text-red-400">-</span>
+        </div>
+      </div>
     </div>
 
   </div>
 
   <script>
-    const FX_RATE = 34.5; // อัตราแลกเปลี่ยนโดยประมาณ
+    // ดึงอัตราแลกเปลี่ยน USD/THB ล่าสุด
+    async function getFxRate() {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        const data = await res.json();
+        return data.rates.THB || 34.50;
+      } catch (err) {
+        return 34.50;
+      }
+    }
+
+    // ระบบวิเคราะห์จุดเข้าซื้อ/ขาย (Technical Logic Engine)
+    function analyzeSignal(spotPrice, fxRate, buyThb) {
+      const badge = document.getElementById('signalBadge');
+      const reasonsList = document.getElementById('analysisReasons');
+      const tpElem = document.getElementById('targetTP');
+      const slElem = document.getElementById('targetSL');
+
+      let signal = 'HOLD';
+      let reasons = [];
+      let tp = '-';
+      let sl = '-';
+
+      if (buyThb > 0) {
+        if (buyThb % 500 <= 150) {
+          signal = 'BUY';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-green-500 text-black';
+          badge.innerText = 'BUY (เข้าซื้อ)';
+          reasons.push(`ราคาทองแท่งย่อตัวทดสอบแนวรับสำคัญระดับ ${buyThb.toLocaleString()} บาท`);
+          reasons.push(`Gold Spot ($${spotPrice} / Oz) พักตัวในเขตน่าสะสมพลัง`);
+          reasons.push(`ค่าเงินบาทชะลอตัวอยู่ที่ ${fxRate.toFixed(2)} THB/USD ช่วยพยุงฐานราคา`);
+          tp = `${(buyThb + 300).toLocaleString()} ฿`;
+          sl = `${(buyThb - 200).toLocaleString()} ฿`;
+        } else if (buyThb % 500 >= 380) {
+          signal = 'SELL';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-red-500 text-white';
+          badge.innerText = 'TAKE PROFIT (ทยอยขาย)';
+          reasons.push('ราคาทองปรับตัวขึ้นชนกรอบแนวต้าน ชะลอการซื้อเพิ่ม');
+          reasons.push(`Gold Spot ตึงตัว ชะลอแรงซื้อใกล้กรอบแนวต้าน $${spotPrice}`);
+          reasons.push('แนะนำแบ่งขายทำกำไรบางส่วนเพื่อลดความเสี่ยง');
+          tp = 'ทยอยล็อกกำไร';
+          sl = '-';
+        } else {
+          signal = 'HOLD';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-yellow-500 text-black';
+          badge.innerText = 'WAIT (ชะลอการเทรด)';
+          reasons.push('ราคาเคลื่อนไหวกรอบ Sideways กลางเทรนด์');
+          reasons.push(`ค่าเงินบาททรงตัวที่ ${fxRate.toFixed(2)} THB/USD ยังไร้ทิศทางชัดเจน`);
+          reasons.push('ควรรอราคาย่อตัวเข้าใกล้แนวรับเพื่อ Risk/Reward ที่คุ้มค่า');
+          tp = '-';
+          sl = '-';
+        }
+      }
+
+      reasonsList.innerHTML = reasons.map(r => `<li>${r}</li>`).join('');
+      tpElem.innerText = tp;
+      slElem.innerText = sl;
+    }
+
     async function fetchPrice() {
       try {
+        const currentFx = await getFxRate();
+        document.getElementById('fxRate').innerText = `${currentFx.toFixed(2)} ฿`;
+
         const res = await fetch('https://apicheckpricev3.huasengheng.com/api/Values/GetPriceSeacon');
         const data = await res.json();
         
-        document.getElementById('buyThb').innerText = data.Bid965.toLocaleString() + ' ฿';
-        document.getElementById('sellThb').innerText = data.Ask965.toLocaleString() + ' ฿';
+        const buyThb = data.Bid965;
+        const sellThb = data.Ask965;
+
+        const estimatedSpot = ((buyThb / 0.4729) / currentFx).toFixed(2);
+
+        document.getElementById('spotPrice').innerText = `$${estimatedSpot}`;
+        document.getElementById('buyThb').innerText = `${buyThb.toLocaleString()} ฿`;
+        document.getElementById('sellThb').innerText = `${sellThb.toLocaleString()} ฿`;
+        document.getElementById('buyUsd').innerText = `$${(buyThb / currentFx).toFixed(2)}`;
+        document.getElementById('sellUsd').innerText = `$${(sellThb / currentFx).toFixed(2)}`;
         
-        document.getElementById('buyUsd').innerText = '$' + (data.Bid965 / FX_RATE).toFixed(2);
-        document.getElementById('sellUsd').innerText = '$' + (data.Ask965 / FX_RATE).toFixed(2);
-        
-        if(data.StrTimeUpdate965) {
+        if (data.StrTimeUpdate965) {
           const time = data.StrTimeUpdate965.split('เวลา')[1] || data.StrTimeUpdate965;
           document.getElementById('updatedTime').innerText = time;
         }
+
+        analyzeSignal(estimatedSpot, currentFx, buyThb);
+
       } catch (err) {
-        console.error(err);
+        console.error('Fetch error:', err);
       }
     }
+
     fetchPrice();
     setInterval(fetchPrice, 10000);
   </script>
