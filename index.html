@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ราคาทองฮั่วเซ่งเฮง Real-time</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+  <div class="max-w-md mx-auto space-y-4">
+    
+    <div class="bg-gray-800 p-4 rounded-xl border border-yellow-500/30 shadow-lg">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-xs font-bold text-yellow-500">ฮั่วเซ่งเฮง 96.5% (Real-time)</span>
+        <span class="text-xs text-gray-400" id="updatedTime">กำลังโหลด...</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
+          <span class="text-xs text-gray-400 block mb-1">รับซื้อคืน (Buy)</span>
+          <div id="buyThb" class="text-lg font-extrabold text-green-400">- ฿</div>
+          <div id="buyUsd" class="text-xs text-gray-400">$-</div>
+        </div>
+        <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
+          <span class="text-xs text-gray-400 block mb-1">ขายออก (Sell)</span>
+          <div id="sellThb" class="text-lg font-extrabold text-yellow-400">- ฿</div>
+          <div id="sellUsd" class="text-xs text-gray-400">$-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center text-xs text-gray-400">
+      💡 ระบบอัปเดตราคาอัตโนมัติทุกๆ 10 วินาที
+    </div>
+
+  </div>
+
+  <script>
+    const FX_RATE = 34.5; // อัตราแลกเปลี่ยนโดยประมาณ
+    async function fetchPrice() {
+      try {
+        const res = await fetch('https://apicheckpricev3.huasengheng.com/api/Values/GetPriceSeacon');
+        const data = await res.json();
+        
+        document.getElementById('buyThb').innerText = data.Bid965.toLocaleString() + ' ฿';
+        document.getElementById('sellThb').innerText = data.Ask965.toLocaleString() + ' ฿';
+        
+        document.getElementById('buyUsd').innerText = '$' + (data.Bid965 / FX_RATE).toFixed(2);
+        document.getElementById('sellUsd').innerText = '$' + (data.Ask965 / FX_RATE).toFixed(2);
+        
+        if(data.StrTimeUpdate965) {
+          const time = data.StrTimeUpdate965.split('เวลา')[1] || data.StrTimeUpdate965;
+          document.getElementById('updatedTime').innerText = time;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchPrice();
+    setInterval(fetchPrice, 10000);
+  </script>
+</body>
+</html>
