@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ราคาทองฮั่วเซ่งเฮง & Key Level Signals</title>
+  <title>ราคาทองฮั่วเซ่งเฮง & Key Level Signals (Buy/Sell Multi-Confluence)</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -16,21 +16,15 @@
       border: 1px solid #334155;
       border-radius: 12px;
     }
-    .text-gold {
-      color: #fbbf24;
-    }
-    .text-usd {
-      color: #38bdf8;
-    }
-    .tradingview-widget-container {
-      height: 400px;
-      width: 100%;
-    }
+    .text-gold { color: #fbbf24; }
+    .text-usd { color: #38bdf8; }
+    .tradingview-widget-container { height: 400px; width: 100%; }
+    .score-progress { height: 8px; border-radius: 4px; }
   </style>
 </head>
 <body class="p-2 p-md-4">
 
-  <div class="container max-width-md" style="max-width: 600px;">
+  <div class="container" style="max-width: 600px;">
     
     <!-- Header: ตลาดทองโลก & ค่าเงินบาท -->
     <div class="card card-custom p-3 mb-3">
@@ -43,14 +37,14 @@
           <div class="p-3 rounded bg-dark border border-secondary text-center">
             <small class="text-secondary d-block">Gold Spot (XAU/USD)</small>
             <span id="gold-spot-price" class="h4 fw-bold text-gold">$0.00</span>
-            <small class="d-block text-muted style-tiny">USD / Troy Oz.</small>
+            <small class="d-block text-muted">USD / Troy Oz.</small>
           </div>
         </div>
         <div class="col-6">
           <div class="p-3 rounded bg-dark border border-secondary text-center">
             <small class="text-secondary d-block">ค่าเงินบาท (USD/THB)</small>
             <span id="usd-thb-price" class="h4 fw-bold text-usd">฿0.00</span>
-            <small class="d-block text-muted style-tiny">THB / 1 USD</small>
+            <small class="d-block text-muted">THB / 1 USD</small>
           </div>
         </div>
       </div>
@@ -64,32 +58,58 @@
       </div>
     </div>
 
-    <!-- กรอบโซนเข้าเทรด (KEY LEVELS - DYNAMIC) -->
+    <!-- ระบบวิเคราะห์ Multi-Confluence Scoring ทั้ง BUY และ SELL -->
     <div class="card card-custom p-3 mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0 fw-bold">🎯 กรอบโซนเข้าเทรด (KEY LEVELS)</h6>
-        <span id="signal-badge" class="badge bg-secondary">CALCULATING</span>
+        <h6 class="mb-0 fw-bold">🎯 วิเคราะห์จุดเข้าเทรด (BUY / SELL)</h6>
+        <span id="signal-badge" class="badge bg-secondary">ANALYZING</span>
+      </div>
+
+      <!-- แถบแสดงคะแนนความน่าเชื่อถือของสัญญาณ -->
+      <div class="mb-3">
+        <div class="d-flex justify-content-between small text-muted mb-1">
+          <span>น้ำหนักสัญญาณ (Confluence Score)</span>
+          <span id="score-text" class="fw-bold text-light">0%</span>
+        </div>
+        <div class="progress bg-dark score-progress">
+          <div id="score-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%"></div>
+        </div>
       </div>
       
+      <!-- ตารางแสดงปัจจัยยืนยัน 3 ประการ -->
+      <div class="bg-dark p-2 rounded mb-2 border border-secondary small">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span>1. Fibonacci Key Zone (50-61.8% / Rebound)</span>
+          <span id="check-fibo" class="badge bg-dark text-secondary">WAITING</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span>2. Day Trend Momentum (ทิศทางราคา)</span>
+          <span id="check-trend" class="badge bg-dark text-secondary">WAITING</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span>3. Structure Zone (Oversold / Overbought)</span>
+          <span id="check-zone" class="badge bg-dark text-secondary">WAITING</span>
+        </div>
+      </div>
+
+      <!-- โซนแนวรับ-แนวต้านหลัก -->
       <div class="row g-2 mb-2">
         <div class="col-6">
           <div class="p-2 border border-danger rounded bg-dark text-start">
-            <small class="text-danger fw-bold d-block mb-1">🔴 KL Sell Zone (โซนขาย)</small>
-            <div id="sell-zone-2" class="small text-light">Zone 2: $0 - $0</div>
-            <div id="sell-zone-1" class="small text-light">Zone 1: $0 - $0</div>
+            <small class="text-danger fw-bold d-block mb-1">🔴 KL Sell Zone (ต้าน/ทำกำไร)</small>
+            <div id="sell-zone" class="small text-light">Target: $0</div>
           </div>
         </div>
         <div class="col-6">
           <div class="p-2 border border-success rounded bg-dark text-start">
-            <small class="text-success fw-bold d-block mb-1">🟢 KL Buy Zone (โซนซื้อ)</small>
-            <div id="buy-zone-1" class="small text-light">Zone 1: $0 - $0</div>
-            <div id="buy-zone-2" class="small text-light">Zone 2: $0 - $0</div>
+            <small class="text-success fw-bold d-block mb-1">🟢 KL Buy Zone (รับ/ย่อซื้อ)</small>
+            <div id="buy-zone" class="small text-light">Golden Ratio: $0</div>
           </div>
         </div>
       </div>
 
       <div id="trade-advice" class="p-2 rounded bg-dark text-warning small text-center">
-        📌 คำแนะนำการเข้าเทรด: กำลังโหลดข้อมูล...
+        📌 คำแนะนำการเข้าเทรด: กำลังประมวลผลสัญญาณซื้อ-ขาย...
       </div>
     </div>
 
@@ -114,65 +134,117 @@
     });
   </script>
 
-  <!-- Real-time Data Fetching & Dynamic Key Levels Script -->
+  <!-- Multi-Confluence Engine (Buy & Sell Dual System) -->
   <script>
     async function fetchMarketData() {
       try {
-        // 1. ดึงราคาทอง Spot (PAXG/USDT จาก Binance API)
-        const goldRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+        const goldRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=PAXGUSDT');
         const goldData = await goldRes.json();
-        const goldPrice = parseFloat(goldData.price);
+        
+        const currentPrice = parseFloat(goldData.lastPrice);
+        const highPrice = parseFloat(goldData.highPrice);
+        const lowPrice = parseFloat(goldData.lowPrice);
+        const openPrice = parseFloat(goldData.openPrice);
 
-        // 2. ดึงอัตราแลกเปลี่ยน USD/THB (จาก ExchangeRate API)
         const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
         const fxData = await fxRes.json();
         const thbRate = fxData.rates.THB;
 
-        // อัปเดตหน้าจอ
-        document.getElementById('gold-spot-price').innerText = `$${goldPrice.toFixed(2)}`;
+        document.getElementById('gold-spot-price').innerText = `$${currentPrice.toFixed(2)}`;
         document.getElementById('usd-thb-price').innerText = `฿${thbRate.toFixed(2)}`;
         
         const now = new Date();
         document.getElementById('update-time').innerText = now.toLocaleTimeString('th-TH') + ' น.';
 
-        // คำนวณ Key Levels อัตโนมัติจากราคา Spot ปัจจุบัน
-        updateDynamicKeyLevels(goldPrice);
+        analyzeDualConfluence(currentPrice, highPrice, lowPrice, openPrice);
 
       } catch (error) {
         console.error('Error fetching market data:', error);
       }
     }
 
-    function updateDynamicKeyLevels(price) {
-      if (!price) return;
+    function analyzeDualConfluence(current, high, low, open) {
+      if (!current || !high || !low) return;
 
-      // คำนวณโซนขาย (Sell Zone) +1% ถึง +3%
-      const sell1_Min = (price * 1.008).toFixed(0);
-      const sell1_Max = (price * 1.018).toFixed(0);
-      const sell2_Min = (price * 1.020).toFixed(0);
-      const sell2_Max = (price * 1.035).toFixed(0);
+      const diff = high - low;
+      const fibo500 = high - (diff * 0.500);
+      const fibo618 = high - (diff * 0.618);
+      const fibo786 = high - (diff * 0.786);
+      const fibo236 = high - (diff * 0.236);
 
-      // คำนวณโซนซื้อ (Buy Zone) -1% ถึง -3%
-      const buy1_Min = (price * 0.982).toFixed(0);
-      const buy1_Max = (price * 0.992).toFixed(0);
-      const buy2_Min = (price * 0.965).toFixed(0);
-      const buy2_Max = (price * 0.980).toFixed(0);
+      document.getElementById('buy-zone').innerText = `$${fibo618.toFixed(0)} - $${fibo500.toFixed(0)}`;
+      document.getElementById('sell-zone').innerText = `$${fibo236.toFixed(0)} - $${high.toFixed(0)}`;
 
-      // แสดงผลโซนราคา
-      document.getElementById('sell-zone-2').innerText = `Zone 2: $${sell2_Min} - $${sell2_Max}`;
-      document.getElementById('sell-zone-1').innerText = `Zone 1: $${sell1_Min} - $${sell1_Max}`;
-      document.getElementById('buy-zone-1').innerText = `Zone 1: $${buy1_Min} - $${buy1_Max}`;
-      document.getElementById('buy-zone-2').innerText = `Zone 2: $${buy2_Min} - $${buy2_Max}`;
+      let buyScore = 0;
+      let sellScore = 0;
 
-      // อัปเดตคำแนะนำการเข้าเทรด
-      document.getElementById('signal-badge').innerText = 'NEUTRAL';
-      document.getElementById('signal-badge').className = 'badge bg-secondary';
-      document.getElementById('trade-advice').innerText = '📌 คำแนะนำการเข้าเทรด: ราคาอยู่กลางกรอบ สะสมพลัง รอเลือกทิศทาง';
+      // --- 1. วิเคราะห์ฝั่ง BUY ---
+      const isBuyFibo = (current <= fibo500 && current >= fibo786);
+      if (isBuyFibo) buyScore += 40;
+
+      const isUptrend = current > open;
+      if (isUptrend) buyScore += 30;
+
+      const isOversold = (high - current) / high >= 0.012;
+      if (isOversold) buyScore += 30;
+
+      // --- 2. วิเคราะห์ฝั่ง SELL ---
+      const isSellFibo = (current >= fibo236);
+      if (isSellFibo) sellScore += 40;
+
+      const isDowntrend = current < open;
+      if (isDowntrend) sellScore += 30;
+
+      const isOverbought = (current - low) / low >= 0.012;
+      if (isOverbought) sellScore += 30;
+
+      // อัปเดตข้อมูลการเช็กเงื่อนไข
+      if (buyScore >= 40) {
+        setCheck('check-fibo', true, 'BUY ZONE');
+        setCheck('check-trend', isUptrend, isUptrend ? 'UPTREND' : 'DOWNTREND');
+        setCheck('check-zone', isOversold, 'OVERSOLD');
+      } else if (sellScore >= 40) {
+        setCheck('check-fibo', true, 'SELL ZONE');
+        setCheck('check-trend', isDowntrend, isDowntrend ? 'DOWNTREND' : 'UPTREND');
+        setCheck('check-zone', isOverbought, 'OVERBOUGHT');
+      } else {
+        setCheck('check-fibo', false, 'WAITING');
+        setCheck('check-trend', false, 'NEUTRAL');
+        setCheck('check-zone', false, 'MID-RANGE');
+      }
+
+      // แสดงผลป้ายคำแนะนำ
+      updateSignalDisplay(buyScore, sellScore, fibo618, fibo236);
     }
 
-    // เรียกทำงานครั้งแรก และวนลูปทุกๆ 10 วินาที
-    fetchMarketData();
-    setInterval(fetchMarketData, 10000);
-  </script>
-</body>
-</html>
+    function setCheck(elementId, isPassed, label) {
+      const el = document.getElementById(elementId);
+      el.innerText = label;
+      if (isPassed) {
+        el.className = 'badge bg-success';
+      } else {
+        el.className = 'badge bg-dark text-secondary';
+      }
+    }
+
+    function updateSignalDisplay(buyScore, sellScore, buyTarget, sellTarget) {
+      const badge = document.getElementById('signal-badge');
+      const advice = document.getElementById('trade-advice');
+      const scoreText = document.getElementById('score-text');
+      const scoreBar = document.getElementById('score-bar');
+
+      if (buyScore >= 70) {
+        scoreBar.className = 'progress-bar bg-success';
+        scoreBar.style.width = `${buyScore}%`;
+        scoreText.innerText = `Buy Score: ${buyScore}%`;
+        badge.innerText = 'STRONG BUY 🟢🟢';
+        badge.className = 'badge bg-success';
+        advice.innerText = `🔥 สัญญาณซื้อเข้มข้น! ย่อเข้าโซนรับ ($${buyTarget.toFixed(0)}) เหมาะแก่การตั้งรับ Buy`;
+      } else if (sellScore >= 70) {
+        scoreBar.className = 'progress-bar bg-danger';
+        scoreBar.style.width = `${sellScore}%`;
+        scoreText.innerText = `Sell Score: ${sellScore}%`;
+        badge.innerText = 'STRONG SELL 🔴🔴';
+        badge.className = 'badge bg-danger';
+        advice.innerText = `🚨 สัญญาณขายเข้มข้น! ดันขึ้นใกล้แนวต้าน ($${sellTarget.toFixed(0)}) ระวังแรงขาย/เหมาะเปิด Sell`;
+      } else if (b
