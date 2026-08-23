@@ -4,162 +4,175 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ราคาทองฮั่วเซ่งเฮง & Key Level Signals</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card-custom {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+    }
+    .text-gold {
+      color: #fbbf24;
+    }
+    .text-usd {
+      color: #38bdf8;
+    }
+    .tradingview-widget-container {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4">
-  <div class="max-w-md mx-auto space-y-4">
+<body class="p-2 p-md-4">
+
+  <div class="container max-width-md" style="max-width: 600px;">
     
-    <!-- Header แสดงราคา Gold Spot & ค่าเงินบาท -->
-    <div class="bg-gray-800 p-4 rounded-xl border border-yellow-500/30 shadow-lg">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xs font-bold text-yellow-500 uppercase">ตลาดทองโลก & ค่าเงินบาท</span>
-        <span class="text-xs text-gray-400" id="updatedTime">อัปเดต: --:--</span>
+    <!-- Header: ตลาดทองโลก & ค่าเงินบาท -->
+    <div class="card card-custom p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 fw-bold text-gold">ตลาดทองโลก & ค่าเงินบาท</h6>
+        <small id="update-time" class="text-secondary">--:--:-- น.</small>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <span class="text-xs text-gray-400 block mb-1">Gold Spot (XAU/USD)</span>
-          <div id="spotPrice" class="text-xl font-black text-yellow-400">$0.00</div>
-          <span class="text-[10px] text-gray-400">USD / Troy Oz.</span>
+      <div class="row g-2">
+        <div class="col-6">
+          <div class="p-3 rounded bg-dark border border-secondary text-center">
+            <small class="text-secondary d-block">Gold Spot (XAU/USD)</small>
+            <span id="gold-spot-price" class="h4 fw-bold text-gold">$0.00</span>
+            <small class="d-block text-muted style-tiny">USD / Troy Oz.</small>
+          </div>
         </div>
-        <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <span class="text-xs text-gray-400 block mb-1">ค่าเงินบาท (USD/THB)</span>
-          <div id="fxRate" class="text-xl font-black text-blue-400">0.00 ฿</div>
-          <span class="text-[10px] text-gray-400">THB / 1 USD</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- กราฟ TradingView Real-time -->
-    <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 shadow-lg">
-      <div class="text-xs font-bold text-gray-300 uppercase mb-2">📈 กราฟเทคนิค Gold Spot (XAU/USD)</div>
-      <div class="h-80 w-full rounded-lg overflow-hidden border border-gray-900">
-        <div class="tradingview-widget-container" style="height:100%;width:100%">
-          <div id="tradingview_gold" style="height:calc(100% - 32px);width:100%"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-          <script type="text/javascript">
-          new TradingView.widget({
-            "autosize": true,
-            "symbol": "OANDA:XAUUSD",
-            "interval": "60",
-            "timezone": "Asia/Bangkok",
-            "theme": "dark",
-            "style": "1",
-            "locale": "th_TH",
-            "enable_publishing": false,
-            "hide_top_toolbar": false,
-            "container_id": "tradingview_gold"
-          });
-          </script>
+        <div class="col-6">
+          <div class="p-3 rounded bg-dark border border-secondary text-center">
+            <small class="text-secondary d-block">ค่าเงินบาท (USD/THB)</small>
+            <span id="usd-thb-price" class="h4 fw-bold text-usd">฿0.00</span>
+            <small class="d-block text-muted style-tiny">THB / 1 USD</small>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- กรอบโซนวิเคราะห์ราคา (Key Levels - Buy / Sell Zones) -->
-    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg space-y-3">
-      <div class="flex justify-between items-center">
-        <span class="text-xs font-bold text-gray-300 uppercase">🎯 กรอบโซนเข้าเทรด (Key Levels)</span>
-        <span id="signalBadge" class="px-2.5 py-1 rounded text-xs font-black bg-gray-700 text-gray-300">NEUTRAL</span>
-      </div>
-
-      <!-- รายการโซนราคา -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="bg-red-950/40 p-2.5 rounded border border-red-500/30">
-          <div class="font-bold text-red-400 mb-1">🔴 KL Sell Zone (โซนขาย)</div>
-          <div class="text-gray-300 font-mono">Zone 2: $4,741 - $4,796</div>
-          <div class="text-gray-300 font-mono">Zone 1: $4,632 - $4,686</div>
-        </div>
-        <div class="bg-green-950/40 p-2.5 rounded border border-green-500/30">
-          <div class="font-bold text-green-400 mb-1">🟢 KL Buy Zone (โซนซื้อ)</div>
-          <div class="text-gray-300 font-mono">Zone 1: $4,170 - $4,204</div>
-          <div class="text-gray-300 font-mono">Zone 2: $4,057 - $4,090</div>
-        </div>
-      </div>
-
-      <!-- สรุปการวิเคราะห์ -->
-      <div class="bg-gray-900 p-3 rounded-lg text-xs space-y-1">
-        <div class="font-bold text-yellow-500">📌 คำแนะนำการเข้าเทรด:</div>
-        <div id="zoneAdvice" class="text-gray-300">กำลังประมวลผลตำแหน่งราคากับโซน Key Level...</div>
+    <!-- กราฟเทคนิค TradingView -->
+    <div class="card card-custom p-3 mb-3">
+      <h6 class="mb-3 fw-bold">📈 กราฟเทคนิค GOLD SPOT (XAU/USD)</h6>
+      <div class="tradingview-widget-container">
+        <div id="tradingview_chart" style="height:100%;width:100%;"></div>
       </div>
     </div>
 
-    <!-- ระบบตั้งค่าแจ้งเตือน LINE Alert -->
-    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg space-y-3">
-      <div class="text-xs font-bold text-gray-300 uppercase">🔔 ตั้งค่าแจ้งเตือนเข้า LINE</div>
-      <div class="space-y-2">
-        <input type="text" id="lineToken" placeholder="วาง LINE Notify Token ที่นี่" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-xs text-white focus:outline-none focus:border-yellow-500">
-        <button onclick="saveLineToken()" class="w-full py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded text-xs transition">บันทึก Token แจ้งเตือน</button>
+    <!-- กรอบโซนเข้าเทรด (KEY LEVELS - DYNAMIC) -->
+    <div class="card card-custom p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0 fw-bold">🎯 กรอบโซนเข้าเทรด (KEY LEVELS)</h6>
+        <span id="signal-badge" class="badge bg-secondary">CALCULATING</span>
+      </div>
+      
+      <div class="row g-2 mb-2">
+        <div class="col-6">
+          <div class="p-2 border border-danger rounded bg-dark text-start">
+            <small class="text-danger fw-bold d-block mb-1">🔴 KL Sell Zone (โซนขาย)</small>
+            <div id="sell-zone-2" class="small text-light">Zone 2: $0 - $0</div>
+            <div id="sell-zone-1" class="small text-light">Zone 1: $0 - $0</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="p-2 border border-success rounded bg-dark text-start">
+            <small class="text-success fw-bold d-block mb-1">🟢 KL Buy Zone (โซนซื้อ)</small>
+            <div id="buy-zone-1" class="small text-light">Zone 1: $0 - $0</div>
+            <div id="buy-zone-2" class="small text-light">Zone 2: $0 - $0</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="trade-advice" class="p-2 rounded bg-dark text-warning small text-center">
+        📌 คำแนะนำการเข้าเทรด: กำลังโหลดข้อมูล...
       </div>
     </div>
 
   </div>
 
+  <!-- TradingView Widget Script -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": "OANDA:XAUUSD",
+      "interval": "60",
+      "timezone": "Asia/Bangkok",
+      "theme": "dark",
+      "style": "1",
+      "locale": "th",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": false,
+      "save_image": false,
+      "container_id": "tradingview_chart"
+    });
+  </script>
+
+  <!-- Real-time Data Fetching & Dynamic Key Levels Script -->
   <script>
-    async function getFxRate() {
+    async function fetchMarketData() {
       try {
-        const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        const data = await res.json();
-        return data.rates.THB || 34.50;
-      } catch (err) { return 34.50; }
-    }
+        // 1. ดึงราคาทอง Spot (PAXG/USDT จาก Binance API)
+        const goldRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+        const goldData = await goldRes.json();
+        const goldPrice = parseFloat(goldData.price);
 
-    // ประมวลผลโซน Key Levels และส่งแจ้งเตือน
-    function processZones(spot) {
-      const badge = document.getElementById('signalBadge');
-      const advice = document.getElementById('zoneAdvice');
-      
-      let signal = 'NEUTRAL';
-      let msg = 'ราคาอยู่กลางกรอบ สะสมพลัง รอเลือกทิศทาง';
+        // 2. ดึงอัตราแลกเปลี่ยน USD/THB (จาก ExchangeRate API)
+        const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+        const fxData = await fxRes.json();
+        const thbRate = fxData.rates.THB;
 
-      if (spot >= 4632) {
-        signal = 'SELL ZONE';
-        badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-red-500 text-white';
-        msg = 'ราคาเข้าเขต KL Sell Zone แนะนำพิจารณาตั้งออเดอร์ SELL หรือทยอยขายทำกำไร';
-      } else if (spot <= 4204 && spot >= 4050) {
-        signal = 'BUY ZONE';
-        badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-green-500 text-black';
-        msg = 'ราคาเข้าเขต KL Buy Zone แนะนำรอสัญญาณกลับตัวแล้วเข้าซื้อ (BUY)';
-      } else {
-        badge.className = 'px-2.5 py-1 rounded text-xs font-black bg-gray-700 text-gray-300';
-      }
-
-      badge.innerText = signal;
-      advice.innerText = msg;
-    }
-
-    function saveLineToken() {
-      const token = document.getElementById('lineToken').value;
-      if (token) {
-        localStorage.setItem('line_token', token);
-        alert('บันทึก LINE Token เรียบร้อยแล้ว!');
-      }
-    }
-
-    async function fetchPrice() {
-      try {
-        const currentFx = await getFxRate();
-        document.getElementById('fxRate').innerText = `${currentFx.toFixed(2)} ฿`;
-
-        const res = await fetch('https://apicheckpricev3.huasengheng.com/api/Values/GetPriceSeacon');
-        const data = await res.json();
-        const buyThb = data.Bid965;
-        const estimatedSpot = ((buyThb / 0.4729) / currentFx).toFixed(2);
-
-        document.getElementById('spotPrice').innerText = `$${estimatedSpot}`;
+        // อัปเดตหน้าจอ
+        document.getElementById('gold-spot-price').innerText = `$${goldPrice.toFixed(2)}`;
+        document.getElementById('usd-thb-price').innerText = `฿${thbRate.toFixed(2)}`;
         
-        if (data.StrTimeUpdate965) {
-          const time = data.StrTimeUpdate965.split('เวลา')[1] || data.StrTimeUpdate965;
-          document.getElementById('updatedTime').innerText = time;
-        }
+        const now = new Date();
+        document.getElementById('update-time').innerText = now.toLocaleTimeString('th-TH') + ' น.';
 
-        processZones(parseFloat(estimatedSpot));
-      } catch (err) { console.error(err); }
+        // คำนวณ Key Levels อัตโนมัติจากราคา Spot ปัจจุบัน
+        updateDynamicKeyLevels(goldPrice);
+
+      } catch (error) {
+        console.error('Error fetching market data:', error);
+      }
     }
 
-    // โหลด Token เดิมถ้ามี
-    document.getElementById('lineToken').value = localStorage.getItem('line_token') || '';
+    function updateDynamicKeyLevels(price) {
+      if (!price) return;
 
-    fetchPrice();
-    setInterval(fetchPrice, 10000);
+      // คำนวณโซนขาย (Sell Zone) +1% ถึง +3%
+      const sell1_Min = (price * 1.008).toFixed(0);
+      const sell1_Max = (price * 1.018).toFixed(0);
+      const sell2_Min = (price * 1.020).toFixed(0);
+      const sell2_Max = (price * 1.035).toFixed(0);
+
+      // คำนวณโซนซื้อ (Buy Zone) -1% ถึง -3%
+      const buy1_Min = (price * 0.982).toFixed(0);
+      const buy1_Max = (price * 0.992).toFixed(0);
+      const buy2_Min = (price * 0.965).toFixed(0);
+      const buy2_Max = (price * 0.980).toFixed(0);
+
+      // แสดงผลโซนราคา
+      document.getElementById('sell-zone-2').innerText = `Zone 2: $${sell2_Min} - $${sell2_Max}`;
+      document.getElementById('sell-zone-1').innerText = `Zone 1: $${sell1_Min} - $${sell1_Max}`;
+      document.getElementById('buy-zone-1').innerText = `Zone 1: $${buy1_Min} - $${buy1_Max}`;
+      document.getElementById('buy-zone-2').innerText = `Zone 2: $${buy2_Min} - $${buy2_Max}`;
+
+      // อัปเดตคำแนะนำการเข้าเทรด
+      document.getElementById('signal-badge').innerText = 'NEUTRAL';
+      document.getElementById('signal-badge').className = 'badge bg-secondary';
+      document.getElementById('trade-advice').innerText = '📌 คำแนะนำการเข้าเทรด: ราคาอยู่กลางกรอบ สะสมพลัง รอเลือกทิศทาง';
+    }
+
+    // เรียกทำงานครั้งแรก และวนลูปทุกๆ 10 วินาที
+    fetchMarketData();
+    setInterval(fetchMarketData, 10000);
   </script>
 </body>
 </html>
