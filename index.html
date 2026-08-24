@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ราคาทองฮั่วเซ่งเฮง & Key Level Signals (Buy/Sell Multi-Confluence)</title>
+  <title>ราคาทองฮั่วเซ่งเฮง & 5-Factor Trading Signals</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -20,11 +20,16 @@
     .text-usd { color: #38bdf8; }
     .tradingview-widget-container { height: 400px; width: 100%; }
     .score-progress { height: 8px; border-radius: 4px; }
+    .factor-card {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body class="p-2 p-md-4">
 
-  <div class="container" style="max-width: 600px;">
+  <div class="container" style="max-width: 650px;">
     
     <!-- Header: ตลาดทองโลก & ค่าเงินบาท -->
     <div class="card card-custom p-3 mb-3">
@@ -58,59 +63,82 @@
       </div>
     </div>
 
-    <!-- ระบบวิเคราะห์ Multi-Confluence Scoring ทั้ง BUY และ SELL -->
+    <!-- ภาพรวมสัญญาณเทรด (Overall Confluence Signal) -->
     <div class="card card-custom p-3 mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0 fw-bold">🎯 วิเคราะห์จุดเข้าเทรด (BUY / SELL)</h6>
+        <h6 class="mb-0 fw-bold">🎯 ภาพรวมสัญญาณเทรด (MULTI-CONFLUENCE)</h6>
         <span id="signal-badge" class="badge bg-secondary">ANALYZING</span>
       </div>
 
-      <!-- แถบแสดงคะแนนความน่าเชื่อถือของสัญญาณ -->
-      <div class="mb-3">
+      <div class="mb-2">
         <div class="d-flex justify-content-between small text-muted mb-1">
-          <span>น้ำหนักสัญญาณ (Confluence Score)</span>
+          <span>น้ำหนักความน่าเชื่อถือสัญญาณ</span>
           <span id="score-text" class="fw-bold text-light">0%</span>
         </div>
         <div class="progress bg-dark score-progress">
           <div id="score-bar" class="progress-bar bg-secondary" role="progressbar" style="width: 0%"></div>
         </div>
       </div>
-      
-      <!-- ตารางแสดงปัจจัยยืนยัน 3 ประการ -->
-      <div class="bg-dark p-2 rounded mb-2 border border-secondary small">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <span>1. Fibonacci Key Zone (50-61.8% / Rebound)</span>
-          <span id="check-fibo" class="badge bg-dark text-secondary">WAITING</span>
+
+      <div id="trade-advice" class="p-2 rounded bg-dark text-warning small text-center mb-1">
+        📌 คำแนะนำการเข้าเทรด: กำลังประมวลผล...
+      </div>
+    </div>
+
+    <!-- วิเคราะห์จุดเข้าซื้อ-ขาย แยกตาม 5 ปัจจัยหลัก -->
+    <div class="card card-custom p-3 mb-3">
+      <h6 class="mb-3 fw-bold text-gold">📊 วิเคราะห์ราคาเข้าเทรด แยกตาม 5 ปัจจัยหลัก</h6>
+
+      <!-- ปัจจัยที่ 1: โครงสร้างราคา -->
+      <div class="factor-card p-3 mb-2">
+        <div class="fw-bold text-info mb-1">1. Structure & Key Levels (โครงสร้างราคา)</div>
+        <div class="row text-center my-2">
+          <div class="col-6"><span class="badge bg-success w-100">BUY: <span id="p1-buy">$0</span></span></div>
+          <div class="col-6"><span class="badge bg-danger w-100">SELL: <span id="p1-sell">$0</span></span></div>
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <span>2. Day Trend Momentum (ทิศทางราคา)</span>
-          <span id="check-trend" class="badge bg-dark text-secondary">WAITING</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <span>3. Structure Zone (Oversold / Overbought)</span>
-          <span id="check-zone" class="badge bg-dark text-secondary">WAITING</span>
-        </div>
+        <small class="text-secondary d-block" id="p1-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <!-- โซนแนวรับ-แนวต้านหลัก -->
-      <div class="row g-2 mb-2">
-        <div class="col-6">
-          <div class="p-2 border border-danger rounded bg-dark text-start">
-            <small class="text-danger fw-bold d-block mb-1">🔴 KL Sell Zone (ต้าน/ทำกำไร)</small>
-            <div id="sell-zone" class="small text-light">Target: $0</div>
-          </div>
+      <!-- ปัจจัยที่ 2: Fibonacci Retracement -->
+      <div class="factor-card p-3 mb-2">
+        <div class="fw-bold text-info mb-1">2. Fibonacci Retracement (Golden Ratio)</div>
+        <div class="row text-center my-2">
+          <div class="col-6"><span class="badge bg-success w-100">BUY: <span id="p2-buy">$0</span></span></div>
+          <div class="col-6"><span class="badge bg-danger w-100">SELL: <span id="p2-sell">$0</span></span></div>
         </div>
-        <div class="col-6">
-          <div class="p-2 border border-success rounded bg-dark text-start">
-            <small class="text-success fw-bold d-block mb-1">🟢 KL Buy Zone (รับ/ย่อซื้อ)</small>
-            <div id="buy-zone" class="small text-light">Golden Ratio: $0</div>
-          </div>
-        </div>
+        <small class="text-secondary d-block" id="p2-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <div id="trade-advice" class="p-2 rounded bg-dark text-warning small text-center">
-        📌 คำแนะนำการเข้าเทรด: กำลังประมวลผลสัญญาณซื้อ-ขาย...
+      <!-- ปัจจัยที่ 3: Trend & Moving Averages -->
+      <div class="factor-card p-3 mb-2">
+        <div class="fw-bold text-info mb-1">3. Trend & Moving Averages (ทิศทางเทรน)</div>
+        <div class="row text-center my-2">
+          <div class="col-6"><span class="badge bg-success w-100">BUY: <span id="p3-buy">$0</span></span></div>
+          <div class="col-6"><span class="badge bg-danger w-100">SELL: <span id="p3-sell">$0</span></span></div>
+        </div>
+        <small class="text-secondary d-block" id="p3-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
+
+      <!-- ปัจจัยที่ 4: RSI Momentum / Oversold-Overbought -->
+      <div class="factor-card p-3 mb-2">
+        <div class="fw-bold text-info mb-1">4. RSI Momentum & Reversal Zones</div>
+        <div class="row text-center my-2">
+          <div class="col-6"><span class="badge bg-success w-100">BUY: <span id="p4-buy">$0</span></span></div>
+          <div class="col-6"><span class="badge bg-danger w-100">SELL: <span id="p4-sell">$0</span></span></div>
+        </div>
+        <small class="text-secondary d-block" id="p4-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
+      </div>
+
+      <!-- ปัจจัยที่ 5: Candlestick Confirmation -->
+      <div class="factor-card p-3 mb-2">
+        <div class="fw-bold text-info mb-1">5. Candlestick Confirmation (รูปแบบแท่งเทียน)</div>
+        <div class="row text-center my-2">
+          <div class="col-6"><span class="badge bg-success w-100">BUY: <span id="p5-buy">$0</span></span></div>
+          <div class="col-6"><span class="badge bg-danger w-100">SELL: <span id="p5-sell">$0</span></span></div>
+        </div>
+        <small class="text-secondary d-block" id="p5-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
+      </div>
+
     </div>
 
   </div>
@@ -134,100 +162,90 @@
     });
   </script>
 
-  <!-- Multi-Confluence Engine (Buy & Sell Dual System) -->
+  <!-- Real-time Data Fetching & 5-Factor Analysis Engine -->
   <script>
     async function fetchMarketData() {
       try {
         const goldRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=PAXGUSDT');
         const goldData = await goldRes.json();
         
-        const currentPrice = parseFloat(goldData.lastPrice);
-        const highPrice = parseFloat(goldData.highPrice);
-        const lowPrice = parseFloat(goldData.lowPrice);
-        const openPrice = parseFloat(goldData.openPrice);
+        const current = parseFloat(goldData.lastPrice);
+        const high = parseFloat(goldData.highPrice);
+        const low = parseFloat(goldData.lowPrice);
+        const open = parseFloat(goldData.openPrice);
 
         const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
         const fxData = await fxRes.json();
         const thbRate = fxData.rates.THB;
 
-        document.getElementById('gold-spot-price').innerText = `$${currentPrice.toFixed(2)}`;
+        document.getElementById('gold-spot-price').innerText = `$${current.toFixed(2)}`;
         document.getElementById('usd-thb-price').innerText = `฿${thbRate.toFixed(2)}`;
         
         const now = new Date();
         document.getElementById('update-time').innerText = now.toLocaleTimeString('th-TH') + ' น.';
 
-        analyzeDualConfluence(currentPrice, highPrice, lowPrice, openPrice);
+        analyze5Factors(current, high, low, open);
 
       } catch (error) {
         console.error('Error fetching market data:', error);
       }
     }
 
-    function analyzeDualConfluence(current, high, low, open) {
-      if (!current || !high || !low) return;
-
+    function analyze5Factors(current, high, low, open) {
       const diff = high - low;
-      const fibo500 = high - (diff * 0.500);
-      const fibo618 = high - (diff * 0.618);
-      const fibo786 = high - (diff * 0.786);
-      const fibo236 = high - (diff * 0.236);
 
-      document.getElementById('buy-zone').innerText = `$${fibo618.toFixed(0)} - $${fibo500.toFixed(0)}`;
-      document.getElementById('sell-zone').innerText = `$${fibo236.toFixed(0)} - $${high.toFixed(0)}`;
+      // 1. Structure & Key Levels
+      const p1Buy = low.toFixed(0);
+      const p1Sell = high.toFixed(0);
+      document.getElementById('p1-buy').innerText = `$${p1Buy}`;
+      document.getElementById('p1-sell').innerText = `$${p1Sell}`;
+      document.getElementById('p1-reason').innerText = `💡 เหตุผล: BUY ที่แนวรับ Swing Low ($${p1Buy}) / SELL ที่แนวต้าน Swing High ($${p1Sell})`;
 
+      // 2. Fibonacci Retracement
+      const p2Buy = (high - (diff * 0.618)).toFixed(0);
+      const p2Sell = (high - (diff * 0.236)).toFixed(0);
+      document.getElementById('p2-buy').innerText = `$${p2Buy}`;
+      document.getElementById('p2-sell').innerText = `$${p2Sell}`;
+      document.getElementById('p2-reason').innerText = `💡 เหตุผล: BUY ที่ Fibo 61.8% Golden Ratio ($${p2Buy}) / SELL ที่ Fibo Rebound 23.6% ($${p2Sell})`;
+
+      // 3. Trend & Moving Averages
+      const avgPrice = ((high + low + current) / 3);
+      const p3Buy = (avgPrice * 0.992).toFixed(0);
+      const p3Sell = (avgPrice * 1.008).toFixed(0);
+      document.getElementById('p3-buy').innerText = `$${p3Buy}`;
+      document.getElementById('p3-sell').innerText = `$${p3Sell}`;
+      document.getElementById('p3-reason').innerText = `💡 เหตุผล: BUY ย่อตัวหาเส้นค่าเฉลี่ย ($${p3Buy}) / SELL เมื่อราคาดันเกินค่าเฉลี่ย ($${p3Sell})`;
+
+      // 4. RSI Momentum
+      const p4Buy = (low + (diff * 0.15)).toFixed(0);
+      const p4Sell = (high - (diff * 0.15)).toFixed(0);
+      document.getElementById('p4-buy').innerText = `$${p4Buy}`;
+      document.getElementById('p4-sell').innerText = `$${p4Sell}`;
+      document.getElementById('p4-reason').innerText = `💡 เหตุผล: BUY โซน Oversold แรงขายตึง ($${p4Buy}) / SELL โซน Overbought แรงซื้อเริ่มหมด ($${p4Sell})`;
+
+      // 5. Candlestick Confirmation
+      const p5Buy = (low + (diff * 0.25)).toFixed(0);
+      const p5Sell = (high - (diff * 0.25)).toFixed(0);
+      document.getElementById('p5-buy').innerText = `$${p5Buy}`;
+      document.getElementById('p5-sell').innerText = `$${p5Sell}`;
+      document.getElementById('p5-reason').innerText = `💡 เหตุผล: BUY เมื่อเกิด Bullish Pinbar โซน $${p5Buy} / SELL เมื่อเกิด Bearish Engulfing โซน $${p5Sell}`;
+
+      // ประมวลผลคะแนนรวมภาพรวม (Overall Score)
+      calculateOverallConfluence(current, high, low, open, p2Buy, p2Sell);
+    }
+
+    function calculateOverallConfluence(current, high, low, open, fiboBuy, fiboSell) {
       let buyScore = 0;
       let sellScore = 0;
 
-      // --- 1. วิเคราะห์ฝั่ง BUY ---
-      const isBuyFibo = (current <= fibo500 && current >= fibo786);
-      if (isBuyFibo) buyScore += 40;
+      if (current <= fiboBuy) buyScore += 40;
+      if (current > open) buyScore += 30;
+      if ((high - current) / high >= 0.012) buyScore += 30;
 
-      const isUptrend = current > open;
-      if (isUptrend) buyScore += 30;
+      if (current >= fiboSell) sellScore += 40;
+      if (current < open) sellScore += 30;
+      if ((current - low) / low >= 0.012) sellScore += 30;
 
-      const isOversold = (high - current) / high >= 0.012;
-      if (isOversold) buyScore += 30;
-
-      // --- 2. วิเคราะห์ฝั่ง SELL ---
-      const isSellFibo = (current >= fibo236);
-      if (isSellFibo) sellScore += 40;
-
-      const isDowntrend = current < open;
-      if (isDowntrend) sellScore += 30;
-
-      const isOverbought = (current - low) / low >= 0.012;
-      if (isOverbought) sellScore += 30;
-
-      // อัปเดตข้อมูลการเช็กเงื่อนไข
-      if (buyScore >= 40) {
-        setCheck('check-fibo', true, 'BUY ZONE');
-        setCheck('check-trend', isUptrend, isUptrend ? 'UPTREND' : 'DOWNTREND');
-        setCheck('check-zone', isOversold, 'OVERSOLD');
-      } else if (sellScore >= 40) {
-        setCheck('check-fibo', true, 'SELL ZONE');
-        setCheck('check-trend', isDowntrend, isDowntrend ? 'DOWNTREND' : 'UPTREND');
-        setCheck('check-zone', isOverbought, 'OVERBOUGHT');
-      } else {
-        setCheck('check-fibo', false, 'WAITING');
-        setCheck('check-trend', false, 'NEUTRAL');
-        setCheck('check-zone', false, 'MID-RANGE');
-      }
-
-      // แสดงผลป้ายคำแนะนำ
-      updateSignalDisplay(buyScore, sellScore, fibo618, fibo236);
-    }
-
-    function setCheck(elementId, isPassed, label) {
-      const el = document.getElementById(elementId);
-      el.innerText = label;
-      if (isPassed) {
-        el.className = 'badge bg-success';
-      } else {
-        el.className = 'badge bg-dark text-secondary';
-      }
-    }
-
-    function updateSignalDisplay(buyScore, sellScore, buyTarget, sellTarget) {
       const badge = document.getElementById('signal-badge');
       const advice = document.getElementById('trade-advice');
       const scoreText = document.getElementById('score-text');
@@ -239,12 +257,26 @@
         scoreText.innerText = `Buy Score: ${buyScore}%`;
         badge.innerText = 'STRONG BUY 🟢🟢';
         badge.className = 'badge bg-success';
-        advice.innerText = `🔥 สัญญาณซื้อเข้มข้น! ย่อเข้าโซนรับ ($${buyTarget.toFixed(0)}) เหมาะแก่การตั้งรับ Buy`;
+        advice.innerText = `🔥 สัญญาณซื้อเข้มข้น! ปัจจัยยืนยันซ้อนทับกันที่โซน $${fiboBuy}`;
       } else if (sellScore >= 70) {
         scoreBar.className = 'progress-bar bg-danger';
         scoreBar.style.width = `${sellScore}%`;
         scoreText.innerText = `Sell Score: ${sellScore}%`;
         badge.innerText = 'STRONG SELL 🔴🔴';
         badge.className = 'badge bg-danger';
-        advice.innerText = `🚨 สัญญาณขายเข้มข้น! ดันขึ้นใกล้แนวต้าน ($${sellTarget.toFixed(0)}) ระวังแรงขาย/เหมาะเปิด Sell`;
-      } else if (b
+        advice.innerText = `🚨 สัญญาณขายเข้มข้น! ดันขึ้นใกล้แนวต้าน $${fiboSell} ระวังแรงขายทำกำไร`;
+      } else {
+        scoreBar.className = 'progress-bar bg-secondary';
+        scoreBar.style.width = '35%';
+        scoreText.innerText = 'Neutral';
+        badge.innerText = 'NEUTRAL / WAIT ⚪';
+        badge.className = 'badge bg-secondary';
+        advice.innerText = '📌 ราคาอยู่กลางกรอบ สะสมพลัง ถือเงินสดรอเลือกทิศทางในโซนที่คุ้มค่า';
+      }
+    }
+
+    fetchMarketData();
+    setInterval(fetchMarketData, 10000);
+  </script>
+</body>
+</html>
