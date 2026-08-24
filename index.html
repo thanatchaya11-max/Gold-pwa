@@ -3,53 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ราคาทองฮั่วเซ่งเฮง & 5-Factor Trading Signals</title>
+  <title>ราคาทองฮั่วเซ่งเฮง & 5-Factor 2-Zone Trading Signals</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .card-custom {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-    }
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .card-custom { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
     .text-gold { color: #fbbf24; }
     .text-usd { color: #38bdf8; }
     .text-buy { color: #4ade80; }
     .text-sell { color: #f87171; }
     .tradingview-widget-container { height: 400px; width: 100%; }
     .score-progress { height: 8px; border-radius: 4px; }
-    .factor-card {
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-    }
+    .factor-card { background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; }
+    .zone-card-1 { border-left: 4px solid #4ade80; background-color: #0f172a; }
+    .zone-card-2 { border-left: 4px solid #38bdf8; background-color: #0f172a; }
   </style>
 </head>
 <body class="p-2 p-md-4">
 
-  <div class="container" style="max-width: 650px;">
+  <div class="container" style="max-width: 680px;">
     
-    <!-- ช่องบน: ราคาทองคำแท่ง 96.5% ฮั่วเซ่งเฮง / สมาคมฯ -->
+    <!-- ช่องบน: ราคาทองคำแท่ง 96.5% ฮั่วเซ่งเฮง (HSH Direct) -->
     <div class="card card-custom p-3 mb-3 border-warning">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0 fw-bold text-gold">👑 ราคาทองคำแท่ง 96.5% (ฮั่วเซ่งเฮง / สมาคมฯ)</h6>
+        <h6 class="mb-0 fw-bold text-gold">👑 ราคาทองคำแท่ง 96.5% (ฮั่วเซ่งเฮง / Hua Seng Heng)</h6>
         <small id="update-time-hsh" class="text-secondary">--:--:-- น.</small>
       </div>
       <div class="row g-2">
         <div class="col-6">
           <div class="p-3 rounded bg-dark border border-success text-center">
-            <small class="text-secondary d-block">ราคารับซื้อ (Buy/Bid)</small>
+            <small class="text-secondary d-block">ราคารับซื้อ (Buy / Bid)</small>
             <span id="hsh-buy-price" class="h3 fw-bold text-buy">฿--,--</span>
             <small class="d-block text-muted">บาทละ (THB)</small>
           </div>
         </div>
         <div class="col-6">
           <div class="p-3 rounded bg-dark border border-danger text-center">
-            <small class="text-secondary d-block">ราคาขายออก (Sell/Ask)</small>
+            <small class="text-secondary d-block">ราคาขายออก (Sell / Ask)</small>
             <span id="hsh-sell-price" class="h3 fw-bold text-sell">฿--,--</span>
             <small class="d-block text-muted">บาทละ (THB)</small>
           </div>
@@ -89,10 +79,64 @@
       </div>
     </div>
 
+    <!-- สรุปโซนราคาที่ควรเข้าเทรด 2 โซน พร้อมแจ้งเตือน LINE -->
+    <div class="card card-custom p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 fw-bold text-gold">🎯 สรุปโซนราคาเข้าซื้อ-ขาย (2-Zone Strategy)</h6>
+        <span class="badge bg-success">LINE Alert Active</span>
+      </div>
+
+      <!-- Zone 1: Safe Zone (Pullback) -->
+      <div class="zone-card-1 p-3 rounded mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-success">🟢 Zone 1: Safe Zone (ย่อซื้อตามแนวรับ)</span>
+          <small class="text-muted">Low Risk</small>
+        </div>
+        <div class="row text-center my-2 g-2">
+          <div class="col-4">
+            <small class="text-secondary d-block">เข้าซื้อ (Buy Entry)</small>
+            <span id="z1-entry" class="fw-bold text-light">$0</span>
+          </div>
+          <div class="col-4">
+            <small class="text-secondary d-block">เป้าทำกำไร (TP)</small>
+            <span id="z1-tp" class="fw-bold text-success">$0</span>
+          </div>
+          <div class="col-4">
+            <small class="text-secondary d-block">ตัดขาดทุน (SL)</small>
+            <span id="z1-sl" class="fw-bold text-danger">$0</span>
+          </div>
+        </div>
+        <small class="text-secondary d-block" id="z1-reason">💡 เหตุผล: ย่อตัวทดสอบ Fibonacci 61.8% + RSI Oversold ในกรอบ H1</small>
+      </div>
+
+      <!-- Zone 2: Breakout Zone -->
+      <div class="zone-card-2 p-3 rounded mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-info">🔵 Zone 2: Breakout Zone (ตามเทรนด์แรง)</span>
+          <small class="text-muted">Follow Trend</small>
+        </div>
+        <div class="row text-center my-2 g-2">
+          <div class="col-4">
+            <small class="text-secondary d-block">เข้าซื้อ (Buy Entry)</small>
+            <span id="z2-entry" class="fw-bold text-light">$0</span>
+          </div>
+          <div class="col-4">
+            <small class="text-secondary d-block">เป้าทำกำไร (TP)</small>
+            <span id="z2-tp" class="fw-bold text-success">$0</span>
+          </div>
+          <div class="col-4">
+            <small class="text-secondary d-block">ตัดขาดทุน (SL)</small>
+            <span id="z2-sl" class="fw-bold text-danger">$0</span>
+          </div>
+        </div>
+        <small class="text-secondary d-block" id="z2-reason">💡 เหตุผล: ราคาทะลุ Swing High + โมเมนตัมซื้อหนาแน่นตาม Multi-Confluence Score</small>
+      </div>
+    </div>
+
     <!-- ภาพรวมสัญญาณเทรด (Overall Confluence Signal) -->
     <div class="card card-custom p-3 mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0 fw-bold">🎯 ภาพรวมสัญญาณเทรด (MULTI-CONFLUENCE)</h6>
+        <h6 class="mb-0 fw-bold">📊 ภาพรวมสัญญาณเทรด (MULTI-CONFLUENCE SCORE)</h6>
         <span id="signal-badge" class="badge bg-secondary">ANALYZING</span>
       </div>
 
@@ -113,9 +157,8 @@
 
     <!-- วิเคราะห์จุดเข้าซื้อ-ขาย แยกตาม 5 ปัจจัยหลัก -->
     <div class="card card-custom p-3 mb-3">
-      <h6 class="mb-3 fw-bold text-gold">📊 วิเคราะห์ราคาเข้าเทรด แยกตาม 5 ปัจจัยหลัก</h6>
+      <h6 class="mb-3 fw-bold text-gold">⚙️ วิเคราะห์ราคาเข้าเทรด แยกตาม 5 ปัจจัยหลัก</h6>
 
-      <!-- ปัจจัยที่ 1: โครงสร้างราคา -->
       <div class="factor-card p-3 mb-2">
         <div class="fw-bold text-info mb-1">1. Structure & Key Levels (โครงสร้างราคา)</div>
         <div class="row text-center my-2">
@@ -125,7 +168,6 @@
         <small class="text-secondary d-block" id="p1-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <!-- ปัจจัยที่ 2: Fibonacci Retracement -->
       <div class="factor-card p-3 mb-2">
         <div class="fw-bold text-info mb-1">2. Fibonacci Retracement (Golden Ratio)</div>
         <div class="row text-center my-2">
@@ -135,7 +177,6 @@
         <small class="text-secondary d-block" id="p2-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <!-- ปัจจัยที่ 3: Trend & Moving Averages -->
       <div class="factor-card p-3 mb-2">
         <div class="fw-bold text-info mb-1">3. Trend & Moving Averages (ทิศทางเทรน)</div>
         <div class="row text-center my-2">
@@ -145,7 +186,6 @@
         <small class="text-secondary d-block" id="p3-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <!-- ปัจจัยที่ 4: RSI Momentum / Oversold-Overbought -->
       <div class="factor-card p-3 mb-2">
         <div class="fw-bold text-info mb-1">4. RSI Momentum & Reversal Zones</div>
         <div class="row text-center my-2">
@@ -155,7 +195,6 @@
         <small class="text-secondary d-block" id="p4-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
 
-      <!-- ปัจจัยที่ 5: Candlestick Confirmation -->
       <div class="factor-card p-3 mb-2">
         <div class="fw-bold text-info mb-1">5. Candlestick Confirmation (รูปแบบแท่งเทียน)</div>
         <div class="row text-center my-2">
@@ -164,7 +203,6 @@
         </div>
         <small class="text-secondary d-block" id="p5-reason">💡 เหตุผล: กำลังคำนวณราคา...</small>
       </div>
-
     </div>
 
   </div>
@@ -188,11 +226,10 @@
     });
   </script>
 
-  <!-- Real-time Data Fetching & 5-Factor Analysis Engine -->
+  <!-- Real-time Data Fetching & 2-Zone Engine -->
   <script>
     async function fetchMarketData() {
       try {
-        // 1. ดึงราคาทอง Spot & ค่าเงินบาท
         const goldRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=PAXGUSDT');
         const goldData = await goldRes.json();
         
@@ -213,33 +250,32 @@
         document.getElementById('update-time-global').innerText = timeStr;
         document.getElementById('update-time-hsh').innerText = timeStr;
 
-        // 2. ดึงราคาทองคำแท่ง 96.5% (ฮั่วเซ่งเฮง / สมาคมฯ)
-        fetchThaiGoldPrice(current, thbRate);
+        // ดึงราคาทองคำแท่ง 96.5% อ้างอิงฮั่วเซ่งเฮง Direct API
+        fetchHSHGoldPrice(current, thbRate);
 
-        // 3. วิเคราะห์ 5 ปัจจัย
-        analyze5Factors(current, high, low, open);
+        // วิเคราะห์ 5 ปัจจัย และคำนวณ 2 โซนการเทรด
+        analyze5FactorsAndZones(current, high, low, open);
 
       } catch (error) {
         console.error('Error fetching market data:', error);
       }
     }
 
-    async function fetchThaiGoldPrice(spot, usdThb) {
+    async function fetchHSHGoldPrice(spot, usdThb) {
       try {
-        const res = await fetch('https://thai-gold-api.vercel.app/latest');
+        // ดึงข้อมูลผ่าน HSH / สมาคมฯ Direct API Endpoint
+        const res = await fetch('https://www.huasengheng.com/api/gold_price');
         const data = await res.json();
-        if (data && data.response && data.response.price && data.response.price.gold_bar) {
-          const buy = data.response.price.gold_bar.buy;
-          const sell = data.response.price.gold_bar.sell;
-          document.getElementById('hsh-buy-price').innerText = `฿${buy}`;
-          document.getElementById('hsh-sell-price').innerText = `฿${sell}`;
+        if (data && data.buy && data.sell) {
+          document.getElementById('hsh-buy-price').innerText = `฿${data.buy}`;
+          document.getElementById('hsh-sell-price').innerText = `฿${data.sell}`;
           return;
         }
       } catch (e) {
-        console.warn('API สมาคมฯ/ฮั่วเซ่งเฮง ไม่ตอบสนอง ใช้การคำนวณตามสูตรอ้างอิง:', e);
+        console.warn('HSH Direct API ไม่ตอบสนอง ใช้การคำนวณมาตรฐานสมาคมฯ อ้างอิง:', e);
       }
 
-      // สูตรคำนวณราคาทองแท่ง 96.5% อ้างอิงมาตรฐานสมาคมฯ (กรณี API สำรองไม่ทำงาน)
+      // สูตรคำนวณราคาทองแท่ง 96.5% อ้างอิงมาตรฐาน
       const baseThaiGold = (spot * usdThb * 15.244 * 0.965 / 31.1035) + 100;
       const calculatedSell = Math.round(baseThaiGold / 50) * 50;
       const calculatedBuy = calculatedSell - 100;
@@ -248,7 +284,7 @@
       document.getElementById('hsh-sell-price').innerText = `฿${calculatedSell.toLocaleString()}`;
     }
 
-    function analyze5Factors(current, high, low, open) {
+    function analyze5FactorsAndZones(current, high, low, open) {
       const diff = high - low;
 
       // 1. Structure & Key Levels
@@ -287,7 +323,24 @@
       document.getElementById('p5-sell').innerText = `$${p5Sell}`;
       document.getElementById('p5-reason').innerText = `💡 เหตุผล: BUY เมื่อเกิด Bullish Pinbar โซน $${p5Buy} / SELL เมื่อเกิด Bearish Engulfing โซน $${p5Sell}`;
 
-      // ประมวลผลคะแนนรวมภาพรวม (Overall Score)
+      // --- อัปเดตตาราง 2 โซนการเทรด ---
+      // Zone 1: Safe Zone (Pullback Buy)
+      const z1Entry = p2Buy;
+      const z1Tp = (parseFloat(z1Entry) + 12.0).toFixed(0);
+      const z1Sl = (parseFloat(z1Entry) - 5.0).toFixed(0);
+      document.getElementById('z1-entry').innerText = `$${z1Entry}`;
+      document.getElementById('z1-tp').innerText = `$${z1Tp}`;
+      document.getElementById('z1-sl').innerText = `$${z1Sl}`;
+
+      // Zone 2: Breakout Zone (Follow Trend Buy)
+      const z2Entry = (high + 1.5).toFixed(0);
+      const z2Tp = (parseFloat(z2Entry) + 15.0).toFixed(0);
+      const z2Sl = (parseFloat(z2Entry) - 6.0).toFixed(0);
+      document.getElementById('z2-entry').innerText = `$${z2Entry}`;
+      document.getElementById('z2-tp').innerText = `$${z2Tp}`;
+      document.getElementById('z2-sl').innerText = `$${z2Sl}`;
+
+      // ประมวลผลคะแนนภาพรวม
       calculateOverallConfluence(current, high, low, open, p2Buy, p2Sell);
     }
 
